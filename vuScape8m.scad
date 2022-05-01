@@ -24,7 +24,7 @@ use <./lib/sbc_models.scad>;
 use <./lib/sbc_case_builder_library.scad>;
 
 view = "model";                     // viewing mode "platter", "model", "debug"
-sbc_model = "m1";                   // sbc "c4"
+sbc_model = "m1";                   // sbc "m1"
 fan = true;                         // fan (true or false)
 vent = true;                        // vent (true or false)
 bracket = "none";                   // bracket style "none","arch","speaker"
@@ -37,10 +37,10 @@ move_cover = 0;                     // moves sbc cover mm in model view or < 0 =
 
 case_offset_x = 0;                  // additional case x axis
 case_offset_y = 16;                 // additional case y axis size 16mm
-case_offset_tz = 0;                 // additional case top z axis size 4.5 min.
-case_offset_bz = 0;                 // additional case bottom z axis size
+case_offset_tz = 0;                 // additional case top z axis
+case_offset_bz = 0;                 // additional case bottom z axis
 
-wallthick = 2.5;                    // case wall thickness
+wallthick = 2;                      // case wall thickness
 floorthick = 2;                     // case floor thickness
 topthick = 2;                       // case top thickness
 sidethick = 2;                      // case side thickness
@@ -49,15 +49,15 @@ gap = 1;                            // distance between pcb and case
 h_depth = 123;                      // heatsink width
 
 c_width = 175+2*(wallthick+gap);    // cover width
-c_depth = 132+2*(wallthick+gap);    // cover depth
-c_height = 28+topthick+gap;         // cover height 28 with access panel
+c_depth = 134+2*(wallthick+gap);    // cover depth
+c_height = 25+floorthick+gap;         // cover height 
 
 c_fillet = 6;                       // corner fillets
 fillet = 0;                         // edge fillets
 tab_clearance = 8;
 view_angle = 15;
 lcd_size = [198,133,4.45];
-view_size = [172.224,107.64,.125];        // 154.21 x 85.92
+view_size = [172.224,107.64,.125];
 pcb_tmaxz = 7.5;
 pcb_bmaxz = 5;
 
@@ -67,17 +67,6 @@ top_height = pcb_tmaxz+topthick+case_offset_tz;
 bottom_height = pcb_bmaxz+floorthick+case_offset_bz;
 case_z = bottom_height+top_height;
 
-bottom_standoff=[   8,     // diameter
-                   18,     // height (top_height)
-                  2.5,     // holesize
-                   10,     // supportsize
-                    4,     // supportheight
-                    4,     // 0=none, 1=countersink, 2=recessed hole, 3=nut holder, 4=blind hole
-                    0,     // standoff style 0=hex, 1=cylinder
-                    1,     // enable reverse standoff
-                    0,     // enable insert at top of standoff
-                  4.5,     // insert hole dia. mm
-                  5.1];    // insert depth mm
 top_standoff=[      7.5,   // radius
                   top_height-topthick,     // height
                   2.7,     // holesize
@@ -89,28 +78,17 @@ top_standoff=[      7.5,   // radius
                     0,     // enable insert at top of standoff
                   4.5,     // insert hole dia. mm
                   5.1];    // insert depth mm
-mount_standoff=[    7,     // radius
-                 10.2,     // height (bottom_height-pcb_z)
-                  2.7,     // holesize
-                    7,     // supportsize
+cover_standoff=[   12,     // radius
+             c_height,     // height
+                  3.2,     // holesize
+                   10,     // supportsize
                     4,     // supportheight
-                    4,     // 0=none, 1=countersink, 2=recessed hole, 3=nut holder, 4=blind hole
+                    1,     // 0=none, 1=countersink, 2=recessed hole, 3=nut holder, 4=blind hole
                     1,     // standoff style 0=hex, 1=cylinder
-                    0,     // enable reverse standoff
-                    0,     // enable insert at top of standoff
-                  4.5,     // insert hole dia. mm
-                  5.1];    // insert depth mm
-boom_standoff=[     7,     // radius
-                    5,     // height (bottom_height-pcb_z)
-                  2.7,     // holesize
-                    7,     // supportsize
-                    4,     // supportheight
-                    4,     // 0=none, 1=countersink, 2=recessed hole, 3=nut holder, 4=blind hole
-                    1,     // standoff style 0=hex, 1=cylinder
-                    0,     // enable reverse standoff
-                    0,     // enable insert at top of standoff
-                  4.5,     // insert hole dia. mm
-                  5.1];    // insert depth mm
+                    1,     // enable reverse standoff
+                    1,     // enable insert at top of standoff
+                    8,     // insert hole dia. mm
+                    6];    // insert depth mm
                   
 adjust = .1;
 $fn = 90;
@@ -125,13 +103,13 @@ $vpd = 590;
 
 // platter view
 if (view == "platter") {
-    translate([0,0,-11]) case_bottom();
-    translate([400,0,42]) rotate([0,180,0]) case_cover();
+    translate([0,0,-6.5]) case_bottom();
+    translate([420,0,38]) rotate([0,180,0]) case_cover();
     translate([0,depth+10,0]) case_top();
     }
 // model view
 if (view == "model") {
-//    translate([(-width/2)+10,0,27]) rotate([90+view_angle,0,0]){         // 8.5, 27 or 
+//    translate([(-width/2)+10,0,3]) rotate([90+view_angle,0,0]) {
         if(sbc_off == false && sbc_model == "m1") translate([27,30,bottom_height+22]) 
             rotate([0,180,270]) sbc(sbc_model);
         if(move_top >= 0) {
@@ -143,17 +121,19 @@ if (view == "model") {
         if(move_cover >= 0) {
             color("grey",1) translate([-10,0,move_cover]) case_cover();
         }
-        translate([gap+wallthick+lcd_size[0],gap+wallthick+(case_offset_y/2),4+topthick]) 
-            rotate([0,180,0]) hk_vu8m(false);
+        if(vu8m_off == false) {
+         translate([gap+wallthick+lcd_size[0],gap+wallthick+(case_offset_y/2),4+topthick]) 
+             rotate([0,180,0]) hk_vu8m(false);
+        }
 //    }
 }
 // debug
 if (view == "debug") {
-case_top();
+//case_top();
 //translate([0,0,-11]) case_bottom();
 //translate([164.85,0,38]) rotate([0,180,0]) case_cover();
-//translate([-150,depth-60,-2.5]) rotate([0,90,0]) bracket("speaker","left");
-//translate([-10,30,-170.5]) rotate([0,-90,0]) bracket("speaker","right");
+translate([-150,depth-60,-2.5]) rotate([0,90,0]) bracket("left");
+//translate([-10,30,-170.5]) rotate([0,-90,0]) bracket("right");
 //access_cover([37,58,2],"landscape");
 }
 
@@ -174,10 +154,14 @@ module case_bottom() {
             cylinder(d=3, h=4);
         translate([width-12,depth-12,bottom_height+floorthick+adjust]) cylinder(d=3, h=4);
         // vu8m post openings
-        translate([gap+wallthick+14.5,16,bottom_height-floorthick-adjust])  cylinder(d=7, h=4);
-        translate([width-gap-wallthick-44.5,16,bottom_height-floorthick-adjust]) cylinder(d=7, h=4);
-        translate([gap+wallthick+14.5,depth-gap-wallthick-12.5,bottom_height-floorthick-adjust]) cylinder(d=7, h=4);
-        translate([width-gap-wallthick-44.5,depth-gap-wallthick-12.5,bottom_height-floorthick-adjust]) cylinder(d=7, h=4);
+        translate([gap+wallthick+14.5,16,bottom_height-floorthick-adjust])  
+            cylinder(d=7, h=4);
+        translate([width-gap-wallthick-44.5,16,bottom_height-floorthick-adjust]) 
+            cylinder(d=7, h=4);
+        translate([gap+wallthick+14.5,depth-gap-wallthick-12.5,bottom_height-floorthick-adjust]) 
+            cylinder(d=7, h=4);
+        translate([width-gap-wallthick-44.5,depth-gap-wallthick-12.5,bottom_height-floorthick-adjust]) 
+            cylinder(d=7, h=4);
         // case bottom standoffs openings
         translate([gap+wallthick+3,5,bottom_height-floorthick-adjust])  cylinder(d=3.2, h=4);
         translate([width-gap-wallthick-3,5,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=4);
@@ -185,6 +169,20 @@ module case_bottom() {
         translate([width-gap-wallthick-3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=4);
         // mipi dsi opening
         translate([166,35.5,bottom_height-gap/2-adjust]) cube([16,25,floorthick+2*adjust]);
+    }
+    // mipi cover
+    difference() {
+        translate([170,48,bottom_height+floorthick+2-adjust]) 
+            cube_fillet_inside([31,32,5], 
+                vertical=[c_fillet,0,0,c_fillet], 
+                    top=[fillet,fillet,fillet,fillet,fillet], 
+                        bottom=[0,0,0,0], $fn=90);
+        translate([170,48,bottom_height-floorthick+2-adjust]) 
+            cube_fillet_inside([31-2*(wallthick+gap),32-2*(wallthick+gap),5], 
+                vertical=[c_fillet-3,0,0,c_fillet-3],
+                    top=[fillet,fillet,fillet,fillet,fillet],
+                        bottom=[0,0,0,0], $fn=90);
+        translate([154,43.5,bottom_height-floorthick+3]) cube([12,16,3]);
     }
 }
 
@@ -226,49 +224,221 @@ module case_cover() {
     difference() {
         union() {
             difference() {
-                translate([(width/2)-wallthick-gap+13,
-                    (depth/2)-wallthick-gap+3,bottom_height+(c_height/2)]) 
+                translate([(width/2)-wallthick-gap+12,
+                    (depth/2)-wallthick-gap+3,bottom_height+(c_height/2)+floorthick+.5]) 
                         cube_fillet_inside([c_width,c_depth,c_height], 
                             vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
                                 top=[fillet,fillet,fillet,fillet,fillet], 
                                     bottom=[0,0,0,0], $fn=90);
-                translate([(width/2)-wallthick-gap+13,(depth/2)-wallthick-gap+3,
-                    bottom_height+(c_height/2)-topthick]) 
-                        cube_fillet_inside([c_width-(wallthick*2),c_depth-(wallthick*2),c_height+adjust], 
+                translate([(width/2)-wallthick-gap+12,(depth/2)-gap+1,
+                    bottom_height+(c_height/2)]) 
+                        cube_fillet_inside([c_width-2*(wallthick+gap),c_depth-2*(wallthick+gap),c_height+adjust], 
                             vertical=[c_fillet-1,c_fillet-1,c_fillet-1,c_fillet-1],
                                 top=[fillet,fillet,fillet,fillet,fillet],
                                     bottom=[0,0,0,0], $fn=90);
-                // heatsink openings
-                translate([(width/2)-67,(depth/2)-wallthick-gap-33,bottom_height+c_height-floorthick]) 
-                        cube([c_width-57,c_depth-2*(wallthick+gap)-65,topthick+2]);
-                translate([(width/2)-67,(depth/2)-wallthick-gap-48,bottom_height+c_height-floorthick]) 
-                        cube([c_width-57,4,topthick+2]);
-                translate([(width/2)-67,(depth/2)-wallthick-gap+45,bottom_height+c_height-floorthick]) 
-                        cube([c_width-57,4,topthick+2]);
-                // hdmi opening
-                translate([(width/2)-wallthick-gap-75,
-                    (depth/2)-wallthick-gap+25,bottom_height+(top_height/2)+15.5]) rotate([0,180,90]) hdmi_open();              
-                // lan openings
-                translate([(width/2)-wallthick-gap-72,
-                    (depth/2)-wallthick-gap+27,bottom_height+(top_height/2)+16.25]) 
-                        rotate([0,180,0]) cube([6.56,16.5,14]);
-                // usb openings
-                translate([(width/2)-wallthick-gap-72,
-                    (depth/2)-wallthick-gap-9.5,bottom_height+(top_height/2)+16.25-adjust]) 
-                        rotate([0,180,0]) cube([12,15.25,16.5]);
-                translate([(width/2)-wallthick-gap-72,
-                    (depth/2)-wallthick-gap-27.5,bottom_height+(top_height/2)+16.25-adjust]) 
-                        rotate([0,180,0]) cube([12,15.25,16.5]);
-                // power opening
-                translate([(width/2)-wallthick-gap-79,
-                    (depth/2)-wallthick-gap-42,bottom_height+(top_height/2)+12.5]) 
-                        rotate([0,90,0]) slab([7,7,6],2);
-                // usb-otg opening
-                translate([(width/2)-wallthick-gap+22,
-                    (depth/2)-wallthick-gap-23.5,bottom_height+(top_height/2)+12.25]) 
-                        rotate([0,0,0]) microusb_open();
+                // io cutout
+                translate([(width/2)-91,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2]) 
+                        cube_fillet_inside([c_width-137,c_depth-2*(wallthick+gap)-35,c_height+adjust], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
+                translate([(width/2)+83,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2]) 
+                        cube_fillet_inside([c_width-137,c_depth-2*(wallthick+gap)-35,c_height+adjust], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
             }
+            // io opening walls
+            difference() {
+                translate([(width/2)-89,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2]) 
+                        cube_fillet_inside([c_width-137,c_depth-2*(wallthick+gap)-35,c_height], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
+                translate([(width/2)-89-wallthick,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2])
+                        cube_fillet_inside([c_width-137,c_depth-3.5*(wallthick+gap)-35,c_height+4*wallthick], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
+            }
+            difference() {
+                translate([(width/2)+82,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2]) 
+                        cube_fillet_inside([c_width-135,c_depth-2*(wallthick+gap)-35,c_height], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
+                translate([(width/2)+87-wallthick,(depth/2)-wallthick-gap,bottom_height+floorthick+.5+c_height/2])
+                        cube_fillet_inside([c_width-135,c_depth-3.5*(wallthick+gap)-35,c_height+4*wallthick], 
+                            vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                                top=[fillet,fillet,fillet,fillet,fillet], 
+                                    bottom=[0,0,0,0], $fn=90);
+            }
+        }
+//translate([(width/2)+50.5,(depth/2)-wallthick-gap-55,bottom_height-adjust]) cube([50,110,c_height+5]);
+
+        // io trim
+        translate([(width/2)-131.5,(depth/2)-wallthick-gap-55,bottom_height-adjust]) 
+            cube([50,110,c_height+5]);
+        translate([(width/2)+99.5,(depth/2)-wallthick-gap-55,bottom_height-adjust]) 
+            cube([50,110,c_height+5]);
+        // heatsink openings
+        translate([(width/2)-67,(depth/2)-wallthick-gap-34,bottom_height+c_height]) 
+                cube([c_width-57,c_depth-2*(wallthick+gap)-65,topthick+2]);
+        translate([(width/2)-67,(depth/2)-wallthick-gap-48,bottom_height+c_height]) 
+                cube([c_width-57,4,topthick+2]);
+        translate([(width/2)-67,(depth/2)-wallthick-gap+45,bottom_height+c_height]) 
+                cube([c_width-57,4,topthick+2]);
+        // hdmi opening
+        translate([(width/2)-wallthick-gap-63,
+            (depth/2)-wallthick-gap+25,bottom_height+(top_height/2)+15.5]) rotate([0,180,90]) hdmi_open();
+        // lan openings
+        translate([(width/2)-wallthick-gap-61,
+            (depth/2)-wallthick-gap+27,bottom_height+(top_height/2)+15.75]) 
+                rotate([0,180,0]) cube([6.56,16.5,14]);
+        // usb openings
+        translate([(width/2)-wallthick-gap-60,
+            (depth/2)-wallthick-gap-9.5,bottom_height+(top_height/2)+15.75-adjust]) 
+                rotate([0,180,0]) cube([12,15.25,16.5]);
+        translate([(width/2)-wallthick-gap-60,
+            (depth/2)-wallthick-gap-27.5,bottom_height+(top_height/2)+15.75-adjust]) 
+                rotate([0,180,0]) cube([12,15.25,16.5]);
+        // power opening
+        translate([(width/2)-wallthick-gap-67,
+            (depth/2)-wallthick-gap-42,bottom_height+(top_height/2)+12.5]) 
+                rotate([0,90,0]) slab([7,7,8],2);
+        // usb-otg opening
+        translate([(width/2)-wallthick-gap-62,
+            (depth/2)-wallthick-gap-24.5,bottom_height+(top_height/2)+17.25]) 
+                rotate([0,0,90]) microusb_open();
+        // audio jack opening
+        translate([(width/2)-wallthick-gap+60,
+            (depth/2)-wallthick-gap+32.5,bottom_height+(top_height/2)+13.5]) 
+                rotate([0,90,0]) cylinder(d=5, h=7);
+        // ir opening
+        translate([(width/2)-wallthick-gap+60,
+            (depth/2)-wallthick-gap-18.5,bottom_height+(top_height/2)+8.25]) 
+                rotate([0,90,0]) cylinder(d=6, h=7);        
+        // sdcard opening
+        translate([(width/2)-wallthick-gap+60,
+            (depth/2)-wallthick-gap-40,bottom_height+(top_height/2)+11.25]) 
+                rotate([0,0,0]) cube([20,15,3]);
+        translate([(width/2)-wallthick-gap+72,
+            (depth/2)-wallthick-gap-32,bottom_height+(top_height/2)+13]) 
+                rotate([0,0,0]) sphere(d=20);
+        // mipi dsi opening
+        translate([(width/2)-wallthick-gap+60,
+            (depth/2)-wallthick-gap-29,bottom_height+(top_height/2)-2.5]) 
+                rotate([0,0,0]) cube([12,12,3]);
+        // top vents
+        translate([(width/2)-wallthick-gap-40,
+            (depth/2)-wallthick-gap+75,bottom_height+(top_height/2)+4]) 
+                rotate([0,0,0]) vent(2,12,8,2,1,12,"vertical");
+        // sbc mount holes
+        translate([gap+wallthick+43.25,39.25,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([gap+wallthick+75.25,39.25,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([gap+wallthick+114.75,39.25,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([width-gap-wallthick-51.25,39.25,bottom_height+c_height-floorthick]) 
+            cylinder(d=3.3, h=6);
+        translate([gap+wallthick+43.25,110.75,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([gap+wallthick+75.25,110.75,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([gap+wallthick+114.75,110.75,bottom_height+c_height-floorthick])  
+            cylinder(d=3.2, h=6);
+        translate([width-gap-wallthick-51.25,110.75,bottom_height+c_height-floorthick]) 
+            cylinder(d=3.3, h=6);
+        // cover standoff openings
+        translate([gap+wallthick+24.5,15.3,bottom_height+c_height-floorthick])  
+            cylinder(d=7, h=6);
+        translate([width-gap-wallthick-34.5,15.3,bottom_height+c_height-floorthick]) 
+            cylinder(d=7, h=6);
+        translate([gap+wallthick+24.6,depth-gap-wallthick-12.6,bottom_height+c_height-floorthick]) 
+            cylinder(d=7, h=6);
+        translate([width-gap-wallthick-34.4,depth-gap-wallthick-12.6,bottom_height+c_height-floorthick]) 
+            cylinder(d=7, h=6);       
+    }
+    // cover standoffs
+    translate([gap+wallthick+24.5,15.3,bottom_height+c_height+floorthick+.5])  
+        standoff(cover_standoff);
+    translate([width-gap-wallthick-34.5,15.3,bottom_height+c_height+floorthick+.5]) 
+        standoff(cover_standoff);
+    translate([gap+wallthick+24.6,depth-gap-wallthick-12.6,bottom_height+c_height+floorthick+.5]) 
+        standoff(cover_standoff);
+    translate([width-gap-wallthick-34.4,depth-gap-wallthick-12.6,bottom_height+c_height+floorthick+.5]) 
+        standoff(cover_standoff);
+}
+
+module bracket(side) {
+   
+    // left bracket
+    if(side == "left") {
+        difference() {
+            union() {
+                translate([-2*(wallthick+gap)+.5,(depth/2)-wallthick-gap-10,top_height+3]) 
+                    cube_fillet_inside([12,depth+18,6], 
+                        vertical=[0,c_fillet,0,0], top=[0,0,0,0], bottom=[0,0,0,0], $fn=90);
+            
+                translate([-2*(wallthick+gap)+.5,-wallthick-gap-6.25,top_height+42]) rotate([90-view_angle,0,0])
+                    cube_fillet_inside([12,100,6], 
+                        vertical=[0,0,0,0], top=[0,0,0,0], 
+                            bottom=[8,0,8,0], $fn=90);
+                difference() {
+                    translate([-14.5,-15,10]) rotate([0,90,0]) cylinder(d=100, h=12, $fn=360);
+                    translate([-15.5-1,-15,10]) rotate([0,90,0]) cylinder(d=94, h=12+3, $fn=360);
+                }
+            }
+            // holes
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+5.5,18,top_height-adjust]) cylinder(d=22, h=12);
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,3.5,bottom_height+floorthick+adjust]) 
+                cylinder(d=3, h=15);
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,depth-12,bottom_height+floorthick+adjust]) 
+                cylinder(d=3, h=15);
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,3.5,bottom_height+floorthick+adjust+8]) 
+                cylinder(d=6, h=4);
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,depth-12,bottom_height+floorthick+adjust+8]) 
+                cylinder(d=6, h=4);
+            // trim
+            translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-50,top_height-46]) cube([14,38,46]);
+            translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-140,top_height-56]) cube([14,98,46]);
+            translate([-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-135.4,top_height-15]) 
+                rotate([-view_angle,0,0]) cube([50,50,140]);
+        }          
+    }
+    // right bracket
+    if(side == "right") {
+        difference() {
+            union() {
+                translate([width-2*(wallthick+gap)+.5-12,(depth/2)-wallthick-gap-10,top_height+3]) 
+                    cube_fillet_inside([12,depth+18,6], 
+                        vertical=[c_fillet,0,0,0], top=[0,0,0,0], bottom=[0,0,0,0], $fn=90);
+                translate([width-2*(wallthick+gap)+.5-12,-wallthick-gap-6.25,top_height+42]) 
+                    rotate([90-view_angle,0,0]) cube_fillet_inside([12,100,6], 
+                        vertical=[0,0,0,0], top=[0,0,0,0], 
+                            bottom=[8,0,8,0], $fn=90);         
+                difference() {
+                    translate([width-2*(wallthick+gap)-17.5,-15,10]) rotate([0,90,0]) 
+                        cylinder(d=100, h=12, $fn=360);
+                    translate([width-2*(wallthick+gap)-17.5-1,-15,10]) rotate([0,90,0]) 
+                        cylinder(d=94, h=12+3, $fn=360);
+                }
+            }
+            // holes
+            translate([((width/2)-2*(gap+wallthick)+lcd_size[0]/2)-21,18,top_height-adjust]) 
+                cylinder(d=22, h=12);
+            translate([width-12-10,3.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
+            translate([width-12-10,depth-12,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
+            translate([width-12-10,3.5,bottom_height+floorthick+adjust+8]) cylinder(d=6, h=4);
+            translate([width-12-10,depth-12,bottom_height+floorthick+adjust+8]) cylinder(d=6, h=4);
+            // trim
+            translate([width-2*(wallthick+gap)-18,(depth/2)-wallthick-gap-50,top_height-46]) 
+                cube([14,38,46]);
+            translate([width-2*(wallthick+gap)-18,(depth/2)-wallthick-gap-140,top_height-56]) 
+                cube([14,98,46]);
+            translate([width-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-135.4,top_height-15]) 
+                rotate([-view_angle,0,0]) cube([50,50,140]);
         }
     }
 }
-
