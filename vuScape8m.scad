@@ -25,9 +25,8 @@ use <./lib/sbc_case_builder_library.scad>;
 
 view = "model";                     // viewing mode "platter", "model", "debug"
 sbc_model = "m1";                   // sbc "m1"
-fan = true;                         // fan (true or false)
 vent = true;                        // vent (true or false)
-bracket = "none";                   // bracket style "none","arch","speaker"
+bracket = true;                     // bracket (true or false)
 
 sbc_off = false;                    // sbc off in model view (true or false)
 vu8m_off = false;                   // vu8m off in model view (true or false)
@@ -103,8 +102,8 @@ $vpd = 590;
 
 // platter view
 if (view == "platter") {
-    translate([0,0,-6.5]) case_bottom();
-    translate([420,0,38]) rotate([0,180,0]) case_cover();
+    translate([-1.5,-2,-6.5]) case_bottom();
+    translate([420,-6.5,38]) rotate([0,180,0]) case_cover();
     translate([0,depth+10,0]) case_top();
     }
 // model view
@@ -125,6 +124,12 @@ if (view == "model") {
          translate([gap+wallthick+lcd_size[0],gap+wallthick+(case_offset_y/2),4+topthick]) 
              rotate([0,180,0]) hk_vu8m(false);
         }
+        if(bracket == true) {
+         translate([gap+wallthick+9,(case_offset_y/2)-3,bottom_height-8]) 
+             rotate([0,0,0]) bracket("left");
+         translate([gap+wallthick+9,(case_offset_y/2)-3,bottom_height-8]) 
+             rotate([0,0,0]) bracket("right");
+        }
 //    }
 }
 // debug
@@ -133,7 +138,7 @@ if (view == "debug") {
 //translate([0,0,-11]) case_bottom();
 //translate([164.85,0,38]) rotate([0,180,0]) case_cover();
 translate([-150,depth-60,-2.5]) rotate([0,90,0]) bracket("left");
-//translate([-10,30,-170.5]) rotate([0,-90,0]) bracket("right");
+translate([-10,30,-170.5]) rotate([0,-90,0]) bracket("right");
 //access_cover([37,58,2],"landscape");
 }
 
@@ -154,9 +159,9 @@ module case_bottom() {
             cylinder(d=3, h=4);
         translate([width-12,depth-12,bottom_height+floorthick+adjust]) cylinder(d=3, h=4);
         // vu8m post openings
-        translate([gap+wallthick+14.5,16,bottom_height-floorthick-adjust])  
+        translate([gap+wallthick+14.5,15.5,bottom_height-floorthick-adjust])  
             cylinder(d=7, h=4);
-        translate([width-gap-wallthick-44.5,16,bottom_height-floorthick-adjust]) 
+        translate([width-gap-wallthick-44.5,15.5,bottom_height-floorthick-adjust]) 
             cylinder(d=7, h=4);
         translate([gap+wallthick+14.5,depth-gap-wallthick-12.5,bottom_height-floorthick-adjust]) 
             cylinder(d=7, h=4);
@@ -167,22 +172,26 @@ module case_bottom() {
         translate([width-gap-wallthick-3,5,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=4);
         translate([gap+wallthick+3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=4);
         translate([width-gap-wallthick-3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=4);
+//#translate([gap+wallthick+3,5,bottom_height-floorthick-adjust])  cylinder(d=3.2, h=40);
+//#translate([width-gap-wallthick-3,5,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
+//#translate([gap+wallthick+3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
+//#translate([width-gap-wallthick-3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
         // mipi dsi opening
-        translate([166,35.5,bottom_height-gap/2-adjust]) cube([16,25,floorthick+2*adjust]);
+        translate([157.5,32.5,bottom_height-gap/2-adjust]) cube([33,31,floorthick+2*adjust]);
     }
     // mipi cover
     difference() {
-        translate([170,48,bottom_height+floorthick+2-adjust]) 
-            cube_fillet_inside([31,32,5], 
-                vertical=[c_fillet,0,0,c_fillet], 
+        translate([175,48,bottom_height+floorthick+2.5]) 
+            cube_fillet_inside([41,37,6], 
+                vertical=[c_fillet,0,c_fillet,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], 
                         bottom=[0,0,0,0], $fn=90);
-        translate([170,48,bottom_height-floorthick+2-adjust]) 
-            cube_fillet_inside([31-2*(wallthick+gap),32-2*(wallthick+gap),5], 
+        translate([175,48,bottom_height-floorthick+4]) 
+            cube_fillet_inside([41-2*(wallthick+gap),37-2*(wallthick+gap),6], 
                 vertical=[c_fillet-3,0,0,c_fillet-3],
                     top=[fillet,fillet,fillet,fillet,fillet],
                         bottom=[0,0,0,0], $fn=90);
-        translate([154,43.5,bottom_height-floorthick+3]) cube([12,16,3]);
+        translate([154,38,bottom_height-floorthick+3]) cube([12,24,3]);
     }
 }
 
@@ -282,11 +291,11 @@ module case_cover() {
         translate([(width/2)+99.5,(depth/2)-wallthick-gap-55,bottom_height-adjust]) 
             cube([50,110,c_height+5]);
         // heatsink openings
-        translate([(width/2)-67,(depth/2)-wallthick-gap-34,bottom_height+c_height]) 
-                cube([c_width-57,c_depth-2*(wallthick+gap)-65,topthick+2]);
-        translate([(width/2)-67,(depth/2)-wallthick-gap-48,bottom_height+c_height]) 
+        translate([(width/2)-66,(depth/2)-wallthick-gap-32.5,bottom_height+c_height]) 
+                cube([c_width-57,c_depth-2*(wallthick+gap)-68,topthick+2]);
+        translate([(width/2)-66,(depth/2)-wallthick-gap-48.5,bottom_height+c_height]) 
                 cube([c_width-57,4,topthick+2]);
-        translate([(width/2)-67,(depth/2)-wallthick-gap+45,bottom_height+c_height]) 
+        translate([(width/2)-66,(depth/2)-wallthick-gap+45.5,bottom_height+c_height]) 
                 cube([c_width-57,4,topthick+2]);
         // hdmi opening
         translate([(width/2)-wallthick-gap-63,
@@ -327,47 +336,49 @@ module case_cover() {
                 rotate([0,0,0]) sphere(d=20);
         // mipi dsi opening
         translate([(width/2)-wallthick-gap+60,
-            (depth/2)-wallthick-gap-29,bottom_height+(top_height/2)-2.5]) 
-                rotate([0,0,0]) cube([12,12,3]);
-        // top vents
-        translate([(width/2)-wallthick-gap-40,
-            (depth/2)-wallthick-gap+75,bottom_height+(top_height/2)+4]) 
-                rotate([0,0,0]) vent(2,12,8,2,1,12,"vertical");
+            (depth/2)-wallthick-gap-34,bottom_height+(top_height/2)-2.5]) 
+                cube([12,24,3]);
+        if(vent == true) {
+            // top vents
+            translate([(width/2)-wallthick-gap-40,
+                (depth/2)-wallthick-gap+75,bottom_height+(top_height/2)+4]) 
+                    rotate([0,0,0]) vent(2,12,8,2,1,12,"vertical");
+        }
         // sbc mount holes
-        translate([gap+wallthick+43.25,39.25,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([gap+wallthick+75.25,39.25,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([gap+wallthick+114.75,39.25,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([width-gap-wallthick-51.25,39.25,bottom_height+c_height-floorthick]) 
-            cylinder(d=3.3, h=6);
-        translate([gap+wallthick+43.25,110.75,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([gap+wallthick+75.25,110.75,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([gap+wallthick+114.75,110.75,bottom_height+c_height-floorthick])  
-            cylinder(d=3.2, h=6);
-        translate([width-gap-wallthick-51.25,110.75,bottom_height+c_height-floorthick]) 
-            cylinder(d=3.3, h=6);
+        translate([gap+wallthick+41.25,39.25,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([gap+wallthick+73.25,39.25,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([gap+wallthick+112.75,39.25,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([width-gap-wallthick-53.25,39.25,bottom_height+c_height-floorthick]) 
+            slot(3.2,4,6);
+        translate([gap+wallthick+41.25,110.75,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([gap+wallthick+73.25,110.75,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([gap+wallthick+112.75,110.75,bottom_height+c_height-floorthick])  
+            slot(3.2,4,6);
+        translate([width-gap-wallthick-53.25,110.75,bottom_height+c_height-floorthick]) 
+            slot(3.2,4,6);
         // cover standoff openings
-        translate([gap+wallthick+24.5,15.3,bottom_height+c_height-floorthick])  
+        translate([gap+wallthick+24.5,15.5,bottom_height+c_height-floorthick])  
             cylinder(d=7, h=6);
-        translate([width-gap-wallthick-34.5,15.3,bottom_height+c_height-floorthick]) 
+        translate([width-gap-wallthick-34.5,15.5,bottom_height+c_height-floorthick]) 
             cylinder(d=7, h=6);
-        translate([gap+wallthick+24.6,depth-gap-wallthick-12.6,bottom_height+c_height-floorthick]) 
+        translate([gap+wallthick+24.5,depth-gap-wallthick-12.5,bottom_height+c_height-floorthick]) 
             cylinder(d=7, h=6);
-        translate([width-gap-wallthick-34.4,depth-gap-wallthick-12.6,bottom_height+c_height-floorthick]) 
+        translate([width-gap-wallthick-34.5,depth-gap-wallthick-12.5,bottom_height+c_height-floorthick]) 
             cylinder(d=7, h=6);       
     }
     // cover standoffs
-    translate([gap+wallthick+24.5,15.3,bottom_height+c_height+floorthick+.5])  
+    translate([gap+wallthick+24.5,15.5,bottom_height+c_height+floorthick+.5])  
         standoff(cover_standoff);
-    translate([width-gap-wallthick-34.5,15.3,bottom_height+c_height+floorthick+.5]) 
+    translate([width-gap-wallthick-34.5,15.5,bottom_height+c_height+floorthick+.5]) 
         standoff(cover_standoff);
-    translate([gap+wallthick+24.6,depth-gap-wallthick-12.6,bottom_height+c_height+floorthick+.5]) 
+    translate([gap+wallthick+24.5,depth-gap-wallthick-12.5,bottom_height+c_height+floorthick+.5]) 
         standoff(cover_standoff);
-    translate([width-gap-wallthick-34.4,depth-gap-wallthick-12.6,bottom_height+c_height+floorthick+.5]) 
+    translate([width-gap-wallthick-34.5,depth-gap-wallthick-12.5,bottom_height+c_height+floorthick+.5]) 
         standoff(cover_standoff);
 }
 
@@ -377,33 +388,29 @@ module bracket(side) {
     if(side == "left") {
         difference() {
             union() {
-                translate([-2*(wallthick+gap)+.5,(depth/2)-wallthick-gap-10,top_height+3]) 
-                    cube_fillet_inside([12,depth+18,6], 
+                translate([-2*(wallthick+gap)+.5,(depth/2)-wallthick-gap-10.5,top_height+3]) 
+                    cube_fillet_inside([12,depth+18,4], 
                         vertical=[0,c_fillet,0,0], top=[0,0,0,0], bottom=[0,0,0,0], $fn=90);
             
                 translate([-2*(wallthick+gap)+.5,-wallthick-gap-6.25,top_height+42]) rotate([90-view_angle,0,0])
-                    cube_fillet_inside([12,100,6], 
+                    cube_fillet_inside([12,100,4], 
                         vertical=[0,0,0,0], top=[0,0,0,0], 
                             bottom=[8,0,8,0], $fn=90);
                 difference() {
-                    translate([-14.5,-15,10]) rotate([0,90,0]) cylinder(d=100, h=12, $fn=360);
-                    translate([-15.5-1,-15,10]) rotate([0,90,0]) cylinder(d=94, h=12+3, $fn=360);
+                    translate([-11.5,-15,10]) rotate([0,90,0]) cylinder(d=100, h=12, $fn=360);
+                    translate([-14,-15,10]) rotate([0,90,0]) cylinder(d=94, h=12+3, $fn=360);
                 }
             }
             // holes
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+5.5,18,top_height-adjust]) cylinder(d=22, h=12);
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,3.5,bottom_height+floorthick+adjust]) 
+translate([((width/2)-gap-wallthick-lcd_size[0]/2)+5.5,18,top_height-adjust]) cylinder(d=22, h=12);
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-6,0,bottom_height+floorthick+adjust]) 
                 cylinder(d=3, h=15);
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,depth-12,bottom_height+floorthick+adjust]) 
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-6,depth-10,bottom_height+floorthick+adjust]) 
                 cylinder(d=3, h=15);
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,3.5,bottom_height+floorthick+adjust+8]) 
-                cylinder(d=6, h=4);
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-10+1,depth-12,bottom_height+floorthick+adjust+8]) 
-                cylinder(d=6, h=4);
             // trim
-            translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-50,top_height-46]) cube([14,38,46]);
+            translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-50,top_height-45]) cube([14,38,46]);
             translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-140,top_height-56]) cube([14,98,46]);
-            translate([-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-135.4,top_height-15]) 
+            translate([-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-152.86,top_height-15]) 
                 rotate([-view_angle,0,0]) cube([50,50,140]);
         }          
     }
@@ -411,34 +418,32 @@ module bracket(side) {
     if(side == "right") {
         difference() {
             union() {
-                translate([width-2*(wallthick+gap)+.5-12,(depth/2)-wallthick-gap-10,top_height+3]) 
-                    cube_fillet_inside([12,depth+18,6], 
+                translate([width-2*(wallthick+gap)+.5-13,(depth/2)-wallthick-gap-10.5,top_height+3]) 
+                    cube_fillet_inside([12,depth+18,4], 
                         vertical=[c_fillet,0,0,0], top=[0,0,0,0], bottom=[0,0,0,0], $fn=90);
-                translate([width-2*(wallthick+gap)+.5-12,-wallthick-gap-6.25,top_height+42]) 
-                    rotate([90-view_angle,0,0]) cube_fillet_inside([12,100,6], 
+                translate([width-2*(wallthick+gap)+.5-13,-wallthick-gap-6.25,top_height+42]) 
+                    rotate([90-view_angle,0,0]) cube_fillet_inside([12,100,4], 
                         vertical=[0,0,0,0], top=[0,0,0,0], 
                             bottom=[8,0,8,0], $fn=90);         
                 difference() {
-                    translate([width-2*(wallthick+gap)-17.5,-15,10]) rotate([0,90,0]) 
+                    translate([width-2*(wallthick+gap)-18.75,-15,10]) rotate([0,90,0]) 
                         cylinder(d=100, h=12, $fn=360);
-                    translate([width-2*(wallthick+gap)-17.5-1,-15,10]) rotate([0,90,0]) 
+                    translate([width-2*(wallthick+gap)-18.5-1,-15,10]) rotate([0,90,0]) 
                         cylinder(d=94, h=12+3, $fn=360);
                 }
             }
             // holes
             translate([((width/2)-2*(gap+wallthick)+lcd_size[0]/2)-21,18,top_height-adjust]) 
                 cylinder(d=22, h=12);
-            translate([width-12-10,3.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
-            translate([width-12-10,depth-12,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
-            translate([width-12-10,3.5,bottom_height+floorthick+adjust+8]) cylinder(d=6, h=4);
-            translate([width-12-10,depth-12,bottom_height+floorthick+adjust+8]) cylinder(d=6, h=4);
+            translate([width-18,0,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
+            translate([width-18,depth-10,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
             // trim
-            translate([width-2*(wallthick+gap)-18,(depth/2)-wallthick-gap-50,top_height-46]) 
-                cube([14,38,46]);
-            translate([width-2*(wallthick+gap)-18,(depth/2)-wallthick-gap-140,top_height-56]) 
-                cube([14,98,46]);
-            translate([width-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-135.4,top_height-15]) 
-                rotate([-view_angle,0,0]) cube([50,50,140]);
+            translate([width-2*(wallthick+gap)-19,(depth/2)-wallthick-gap-60,top_height-45]) 
+                cube([14,50,46]);
+            translate([width-2*(wallthick+gap)-19,(depth/2)-wallthick-gap-140,top_height-71]) 
+                cube([14,98,60]);
+            translate([width-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-173.6,top_height-15]) 
+                rotate([-view_angle,0,0]) cube([50,70,140]);
         }
     }
 }
