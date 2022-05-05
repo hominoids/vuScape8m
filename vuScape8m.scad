@@ -138,9 +138,9 @@ if (view == "model") {
 if (view == "debug") {
 //case_top();
 //translate([0,0,-11]) case_bottom();
-//translate([164.85,0,38]) rotate([0,180,0]) case_cover();
-translate([-150,35,12]) rotate([0,270,0]) bracket("left");
-translate([-130,30,191.5]) rotate([0,90,0]) bracket("right");
+translate([164.85,0,38]) rotate([0,180,0]) case_cover();
+//translate([-150,35,12]) rotate([0,270,0]) bracket("left");
+//translate([-130,30,191.5]) rotate([0,90,0]) bracket("right");
 }
 
 
@@ -180,10 +180,6 @@ module case_bottom() {
         // mipi dsi opening
         translate([157.5,32.5,bottom_height-gap/2-adjust]) cube([33,31,floorthick+2*adjust]);
     }
-//#translate([gap+wallthick+3,5,bottom_height-floorthick-adjust])  cylinder(d=3.2, h=40);
-//#translate([width-gap-wallthick-3,5,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
-//#translate([gap+wallthick+3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
-//#translate([width-gap-wallthick-3,depth-gap-wallthick-2,bottom_height-floorthick-adjust]) cylinder(d=3.2, h=40);
     // mipi cover
     difference() {
         translate([181.5,48,bottom_height+floorthick+2.5]) 
@@ -238,15 +234,14 @@ module case_cover() {
     difference() {
         union() {
             difference() {
-                translate([(width/2)-3,
-                    (depth/2),bottom_height+(c_height/2)+floorthick]) 
+                translate([(width/2)-3,(depth/2),bottom_height+(c_height/2)+floorthick]) 
                         cube_fillet_inside([c_width,c_depth,c_height], 
                             vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
                                 top=[fillet,fillet,fillet,fillet,fillet], 
                                     bottom=[0,0,0,0], $fn=90);
                 translate([(width/2)-3,(depth/2),bottom_height+(c_height/2)]) 
-                    cube_fillet_inside([c_width-2*(wallthick+gap),c_depth-2*(wallthick+gap),
-                        c_height-2*floorthick+adjust], vertical=[c_fillet-1,c_fillet-1,c_fillet-1,c_fillet-1],
+                    cube_fillet_inside([c_width-2*(wallthick),c_depth-2*(wallthick),c_height+adjust],
+                        vertical=[c_fillet-1,c_fillet-1,c_fillet-1,c_fillet-1],
                             top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
                 // io cutout
                 translate([(width/2)-70,(depth/2)-wallthick-gap,bottom_height+floorthick+gap+c_height/2]) 
@@ -305,7 +300,7 @@ module case_cover() {
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+32.5,bottom_height+(top_height/2)+13.5]) 
                 rotate([0,90,0]) cylinder(d=5, h=7);
-        translate([(width/2)-wallthick-gap+78,
+        translate([(width/2)-wallthick-gap+78.5,
             (depth/2)-wallthick-gap+32.5,bottom_height+(top_height/2)+13.5]) 
                 rotate([0,90,0]) cylinder(d=9, h=2);
         // ir opening
@@ -315,14 +310,12 @@ module case_cover() {
         // sdcard opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap-40,bottom_height+(top_height/2)+12]) cube([20,15,3]);
-        translate([(width/2)-wallthick-gap+86.5,
+        translate([(width/2)-wallthick-gap+87.5,
             (depth/2)-wallthick-gap-32,bottom_height+(top_height/2)+13.5]) sphere(d=20);
         // audio plug opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+18,bottom_height+(top_height/2)+10.5]) cube([8,7,5.5]);
         // button opening
-//        translate([(width/2)-wallthick-gap+75,
-//            (depth/2)-wallthick-gap+5,bottom_height+(top_height/2)+7]) cube([8,7,5]);
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+8.25,bottom_height+(top_height/2)+10]) 
                 rotate([0,90,0]) cylinder(d=6,h=40); 
