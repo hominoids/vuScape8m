@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Code released under GPLv3: http://www.gnu.org/licenses/gpl.html
 
-    2022xxxx Version 1.0.0    vuScape8m Vu8m SBC Case initial release
+    20220505 Version 1.0.0    vuScape8m Vu8m and Odroid-M1 integrated Case initial release
     
 */
 
@@ -27,6 +27,7 @@ view = "model";                     // viewing mode "platter", "model", "debug"
 sbc_model = "m1";                   // sbc "m1"
 vent = true;                        // vent (true or false)
 bracket = true;                     // bracket (true or false)
+sd_indent = true;                   // sdcard sphere indent
 
 sbc_off = false;                    // sbc off in model view (true or false)
 vu8m_off = false;                   // vu8m off in model view (true or false)
@@ -94,12 +95,6 @@ $fn = 90;
 
 echo(width=width, depth=depth, height=top_height);
 
-/*
-$vpt = [8, -6.5, 67];
-$vpr = [83.3, 0, $t*360];
-$vpd = 590;
-*/
-
 // platter view
 if (view == "platter") {
     translate([-1.5,-2,-6.5]) case_bottom();
@@ -110,7 +105,7 @@ if (view == "platter") {
     }
 // model view
 if (view == "model") {
-    translate([(width/2)+10,0,19]) rotate([90+view_angle,0,180]) {
+    translate([(width/2),-40,19]) rotate([90+view_angle,0,180]) {
         if(sbc_off == false && sbc_model == "m1") translate([42,30,bottom_height+22]) 
             rotate([0,180,270]) sbc(sbc_model);
         if(move_top >= 0) {
@@ -145,6 +140,7 @@ translate([164.85,0,38]) rotate([0,180,0]) case_cover();
 
 
 module case_bottom() {
+    
     difference() {
         translate([(width/2),(depth/2),top_height-floorthick]) 
             cube_fillet_inside([width-(wallthick*2)-.6,depth-(wallthick*2)-.6,floorthick], 
@@ -195,6 +191,7 @@ module case_bottom() {
 
 
 module case_top() {
+    
     difference() {
         union() {
             difference() {
@@ -299,7 +296,7 @@ module case_cover() {
         // audio jack opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+32.5,bottom_height+(top_height/2)+13.5]) 
-                rotate([0,90,0]) cylinder(d=5, h=7);
+                rotate([0,90,0]) cylinder(d=6, h=7);
         translate([(width/2)-wallthick-gap+78.5,
             (depth/2)-wallthick-gap+32.5,bottom_height+(top_height/2)+13.5]) 
                 rotate([0,90,0]) cylinder(d=9, h=2);
@@ -310,8 +307,10 @@ module case_cover() {
         // sdcard opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap-40,bottom_height+(top_height/2)+12]) cube([20,15,3]);
-        translate([(width/2)-wallthick-gap+87.5,
-            (depth/2)-wallthick-gap-32,bottom_height+(top_height/2)+13.5]) sphere(d=20);
+        if(sd_indent == true) {
+            translate([(width/2)-wallthick-gap+87.5,
+                (depth/2)-wallthick-gap-32,bottom_height+(top_height/2)+13.5]) sphere(d=20);
+        }
         // audio plug opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+18,bottom_height+(top_height/2)+10.5]) cube([8,7,5.5]);
@@ -387,10 +386,10 @@ module bracket(side) {
                 }
             }
             // cover trim
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,12.5,top_height-adjust])
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,13,top_height-adjust])
                 cube_fillet_inside([40,22,c_height], vertical=[0,0,c_fillet,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,129,top_height-adjust])
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,130,top_height-adjust])
                 cube_fillet_inside([40,28,c_height], vertical=[0,c_fillet,0,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
             // holes
@@ -401,7 +400,7 @@ module bracket(side) {
             // trim
             translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-50,top_height-45]) cube([14,38,46]);
             translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-140,top_height-56]) cube([14,98,46]);
-            translate([-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-152.86,top_height-15]) 
+            translate([-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-152.85,top_height-15]) 
                 rotate([-view_angle,0,0]) cube([50,50,140]);
         }          
     }
@@ -417,14 +416,14 @@ module bracket(side) {
                         vertical=[0,0,0,0], top=[0,0,0,0], 
                             bottom=[8,0,8,0], $fn=90);         
                 difference() {
-                    translate([width-2*(wallthick+gap)-18.75,-15,10]) rotate([0,90,0]) 
+                    translate([width-2*(wallthick+gap)-18.5,-15,10]) rotate([0,90,0]) 
                         cylinder(d=100, h=12, $fn=360);
                     translate([width-2*(wallthick+gap)-18.5-1,-15,10]) rotate([0,90,0]) 
                         cylinder(d=94, h=12+3, $fn=360);
                 }
             }
             // cover trim
-            translate([162.25,43,bottom_height+floorthick+4.75]) 
+            translate([162.25,43.5,bottom_height+floorthick+4.75]) 
                 cube_fillet_inside([41,38,7], vertical=[c_fillet,0,c_fillet,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
             // holes
@@ -435,7 +434,7 @@ module bracket(side) {
                 cube([14,50,46]);
             translate([width-2*(wallthick+gap)-19,(depth/2)-wallthick-gap-140,top_height-71]) 
                 cube([14,98,60]);
-            translate([width-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-173.6,top_height-15]) 
+            translate([width-2*(wallthick+gap)-30,(depth/2)-wallthick-gap-173.56,top_height-15]) 
                 rotate([-view_angle,0,0]) cube([50,70,140]);
         }
     }
