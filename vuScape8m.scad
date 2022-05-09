@@ -16,7 +16,8 @@
     Code released under GPLv3: http://www.gnu.org/licenses/gpl.html
 
     20220505 Version 1.0.0    vuScape8m Vu8m and Odroid-M1 integrated Case initial release
-    
+    20220509 Version 1.0.1    adjusted location of brackets and mounting holes,
+                              odroid-m1 audio plug opening moved 1mm.
 */
 
 use <./lib/fillets.scad>;
@@ -122,9 +123,9 @@ if (view == "model") {
              rotate([0,180,0]) hk_vu8m(false);
         }
         if(bracket == true) {
-         color("grey",1) translate([gap+wallthick+9,(case_offset_y/2)-3.75,bottom_height-8]) 
+         color("grey",1) translate([gap+wallthick+8.5,(case_offset_y/2)-3.5,bottom_height-8]) 
              rotate([0,0,0]) bracket("left");
-         color("grey",1) translate([gap+wallthick+9,(case_offset_y/2)-3.75,bottom_height-8]) 
+         color("grey",1) translate([gap+wallthick+9.5,(case_offset_y/2)-3.5,bottom_height-8]) 
              rotate([0,0,0]) bracket("right");
         }
     }
@@ -313,7 +314,7 @@ module case_cover() {
         }
         // audio plug opening
         translate([(width/2)-wallthick-gap+75,
-            (depth/2)-wallthick-gap+18,bottom_height+(top_height/2)+10.5]) cube([8,7,5.5]);
+            (depth/2)-wallthick-gap+17,bottom_height+(top_height/2)+11.5]) cube([8,7,4.5]);
         // button opening
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap+8.25,bottom_height+(top_height/2)+10]) 
@@ -393,9 +394,9 @@ module bracket(side) {
                 cube_fillet_inside([40,28,c_height], vertical=[0,c_fillet,0,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
             // holes
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-6,.75,bottom_height+floorthick+adjust]) 
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-5.5,.5,bottom_height+floorthick+adjust]) 
                 cylinder(d=3, h=15);
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-6,depth-9.25,bottom_height+floorthick+adjust]) 
+            translate([((width/2)-gap-wallthick-lcd_size[0]/2)-5.5,depth-9.5,bottom_height+floorthick+adjust]) 
                 cylinder(d=3, h=15);
             // trim
             translate([-2*(wallthick+gap)-6.5,(depth/2)-wallthick-gap-50,top_height-45]) cube([14,38,46]);
@@ -427,8 +428,8 @@ module bracket(side) {
                 cube_fillet_inside([41,38,7], vertical=[c_fillet,0,c_fillet,c_fillet], 
                     top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
             // holes
-            translate([width-18,.75,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
-            translate([width-18,depth-9.25,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
+            translate([width-18.5,.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
+            translate([width-18.5,depth-9.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
             // trim
             translate([width-2*(wallthick+gap)-19,(depth/2)-wallthick-gap-60,top_height-45]) 
                 cube([14,50,46]);
