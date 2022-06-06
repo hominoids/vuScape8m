@@ -1,6 +1,5 @@
 /*
-    SBC Library Copyright 2016,2017,2018,2019,2020 Edward A. Kisiel
-    hominoid @ www.forum.odroid.com
+    SBC Library Copyright 2016,2017,2018,2019,2020,2021,2022 Edward A. Kisiel hominoid@cablemi.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,6 +49,38 @@
     20220413 Version 1.0.6 adjusted slide_4x9, adjust m.2_header, rj45-usb2_double, rj45-usb3_double, out-in-spdif,
                            momentary_6x6x4, fixed color for usb2 micro otg, adjust all header heights, 
                            added mipi_csi, mipi_dsi, m.2_stud
+    20220515 Version 1.0.7 added pcie(), jst_ph(), cm(), cm_holder(), corrected odroid-m1 heatsink height and sbc location, and other fixes and adjustments
+    
+    see https://github.com/hominoids/SBC_Case_Builder
+
+    place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+    pcb_add(size_x,size_y,loc_x,loc_y,rotation,side,type,pcbsize_z,data_1,data_2) - "square","round"
+    pcb_sub(size_x,size_y,loc_x,loc_y,rotation,side,type,pcbsize_z,data_1,data_2) - "square","round","art"
+    pcb_art(scale_d1,type,dxf_file) - "dxf"
+    pcb(size, radius)
+    memory(x,y,rotation,side,type,pcbsize_z) - "emmc","emmc_plug","sodimm_5.2","sodimm_9.2"
+    switch(x,y,rotation,side,type,pcbsize_z) - "slide_4x9"
+    button(x,y,rotation,side,type,pcbsize_z) - "momentary_6x6x9","momentary_6x6x4","momentary_6x6x4_90","momentary_4x2x1"
+    plug(x,y,rotation,side,type,pcbsize_z) - "pwr2.5_5x7.5","pwr5.5_7.5x11.5","pwr5.5_10x10","rtc_micro","audio_micro","uart_micro","molex_4x1","small_encl_satapwr"
+    usb2(x,y,rotation,side,type,pcbsize_z) - "single_vert_a","double_stacked_a","micro"
+    usb3(x,y,rotation,side,type,pcbsize_z) - "double_stacked_a"
+    network(x,y,rotation,side,type,pcbsize_z) - "rj45_single"
+    video(x,y,rotation,side,type,pcbsize_z - "hdmi_a","dp-hdmi_a","mipi_csi","mipi_dsi"
+    fan(x,y,rotation,side,type,pcbsize_z) - "micro","encl_pmw","encl_pmw_h"
+    gpio(x,y,rotation,side,type,pcbsize_z) - "encl_header_30","encl_header_12","header_40","header_20"
+    ic(x,y,rotation,side,type,pcbsize_z) - "ic_2.8x2.8","ic_3x3","ic_3.7x3.7","ic_4x4","ic_4.7x4.7","ic_5x5","ic_5.75x5.75","ic_6x6","ic_6.4x6.4",ic_6.75x6.75",
+                                           "ic_7x7","ic_4.3x5.1","ic_5.4x5.3","ic_6.7x8.4","ic_9x9","ic_11x8","ic_13x8","ic_13x9","ic_16x10"
+    audio(x,y,rotation,side,type,pcbsize_z) - "out-in-spdif","jack_3.5"
+    storage(x,y,rotation,side,type,pcbsize_z) - "sdcard","sdcard_i","sata_header","sata_power_vrec","sata_encl_power","sata_encl_header","m.2_header","m.2_stud"
+    combo(x,y,rotation,side,type,pcbsize_z) - "rj45-usb2_double","rj45-usb3_double"
+    jumper(x,y,rotation,side,type,pcbsize_z) - "header_2x1","header_3x2","header_5x1","header_6x1","header_7x1"
+    misc(x,y,rotation,side,type,pcbsize_z) - "ir_1","led_3x1.5","lcd_2.2","bat_hold_1"
+    heatsink(x,y,rotation,side,type,pcbsize_z,soc1size_z) - "hc4_oem","c4_oem","c2_oem","c1+_oem","xu4_oem","n1_oem","xu4q_oem","n2_oem","n2+_oem","m1_oem","h2_oem"
+    pcie(x,y,rotation,side,type,pcbsize_z) - "x4"
+    jst_ph(x,y,rotation,side,type,pcbsize_z) - type is #pins
+    cm_holder(x,y,rotation,side,type,pcbsize_z) - jetsonnano
+    cm(x,y,rotation,side,type,pcbsize_z) - jetsonnano
+    
 */
 
 module place(x,y,size_x,size_y,rotation,side,type,pcbsize_z) {
@@ -220,12 +251,12 @@ module memory(x,y,rotation,side,type,pcbsize_z) {
 module switch(x,y,rotation,side,type,pcbsize_z) {
     // boot selector switch
     if(type=="slide_4x9") {
-        size_x = 3.75;
-        size_y = 9.1;                
+        size_x = 9;                
+        size_y = 3.75;
         place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
         union() {    
             color("silver") translate([0,0,.5]) cube([size_x, size_y, 3.5]);
-            color("white") translate([3.75,4.5,1.75]) cube([3, 2, 1.5]);
+            color("white") translate([3.75,-1.99,1.75]) cube([3, 2, 1.5]);
         }
     }
 }
@@ -251,6 +282,19 @@ module button(x,y,rotation,side,type,pcbsize_z) {
         size_y = 6;        
         place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
         union() {
+            color("silver") translate([0,0,0]) cube([size_x,size_y,3.5]);
+            color("black") translate([3,3,3.5]) cylinder(r=1.6,h=2.5,$fn=30);
+            color("black") translate([1,1,3.5]) sphere(d=1);
+            color("black") translate([1,5,3.5]) sphere(d=1);
+            color("black") translate([5,1,3.5]) sphere(d=1);
+            color("black") translate([5,5,3.5]) sphere(d=1);
+        }
+    }
+    if(type=="momentary_6x6x4_90") {
+        size_x = 6;
+        size_y = 6;        
+        place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+        rotate([90, 0, 0]) union() {
             color("silver") translate([0,0,0]) cube([size_x,size_y,3.5]);
             color("black") translate([3,3,3.5]) cylinder(r=1.6,h=2.5,$fn=30);
             color("black") translate([1,1,3.5]) sphere(d=1);
@@ -600,7 +644,7 @@ module video(x,y,rotation,side,type,pcbsize_z) {
             difference() {
                 color("silver") translate([0,0,0]) cube([size_x, size_y, 19]);
                 translate([2,-.7,1.5]) color("dimgray") cube([14.5, 11.5, 5.5]);
-                translate([1.5,-.7,12.5]) color("dimgray") cube([15, 18.5, 5.5]);
+                translate([1.5,-.7,12.5]) color("dimgray") cube([15, 17.5, 5.5]);
             }         
             translate([2,-.7,1.5]){
                 difference() {
@@ -629,7 +673,7 @@ module video(x,y,rotation,side,type,pcbsize_z) {
                 color("black") translate([2.5,.5,2.25]) cube([9.25,10.5,1.5]);
             }
             color("black") translate([2.5,.5,14.5]) cube([13,10.5,1.5]);
-            color("silver") translate([0,0,12.5]) rotate([0,45,0]) cube([2,18.5,2]);
+            color("silver") translate([0,0,12.5]) rotate([0,45,0]) cube([2,17.5,2]);
             color("silver") translate([-.5,0,13]) cube([.6,.5,4.5]);
             color("silver") translate([17.9,0,13]) cube([.6,.5,4.5]);
             color("silver") translate([2,0,18.9]) cube([14,.5,.5]);
@@ -1297,7 +1341,7 @@ module misc(x,y,rotation,side,type,pcbsize_z) {
                     }
                 color("black") translate([54.5,4,-.01]) cube([2,30,4]);
             }
-            color("grey") translate([4.25,.9,3.35]) cube([45,34,.25]);
+            color("dimgrey") translate([4.25,.9,3.35]) cube([45,34,.25]);
         }
     }
     // type battery holder 1
@@ -1476,19 +1520,19 @@ module heatsink(x,y,rotation,side,type,pcbsize_z,soc1size_z) {
     if(type=="n2_oem") {
         size_x = 90;
         size_y = 90;                
-        place(x,y,size_x,size_y,rotation,side,type,(pcbsize_z-pcbsize_z-3))
+        place(x,y,size_x,size_y,rotation,side,type,-3)
         color("gray") import("Odroid-N2_Heatsink.stl", convexity=3);
     }
     if(type=="n2+_oem") {
         size_x = 90;
         size_y = 90;                
-        place(x,y,size_x,size_y,rotation,side,type,(pcbsize_z-pcbsize_z-3))
+        place(x,y,size_x,size_y,rotation,side,type,-3)
         color("gray") import("Odroid-N2+_Heatsink.stl", convexity=3);
     }
     if(type=="m1_oem") {
         size_x = 90;
         size_y = 122;                
-        place(x,y,size_x,size_y,rotation,side,type,(pcbsize_z-pcbsize_z-3))
+        place(x,y,size_x,size_y,rotation,side,type,-3)
         color("gray") translate([-.5,0,3]) rotate([0,0,0]) import("Odroid-M1_Heatsink.stl", convexity=3);
     }
     if(type=="h2_oem") {
@@ -1498,4 +1542,139 @@ module heatsink(x,y,rotation,side,type,pcbsize_z,soc1size_z) {
         color("gray") import("Odroid-H2_Heatsink.stl", convexity=3);
 
     }
+}
+
+// pcie class
+module pcie(x,y,rotation,side,type,pcbsize_z) {
+    // PCIE-X4
+    if (type=="x4") {
+        size_x = 38.8;
+        size_y = 8.5;
+        place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+        union() {
+            difference() {
+                color("black") cube([size_x, size_y, 11.1]);
+                color("dimgrey") translate([1.55,(size_y/2)-.8,2]) cube([11.5,1.6,11]);
+                color("dimgrey") translate([16.5,(size_y/2)-.8,2]) cube([20.3,1.6,11]);
+            }
+            for (i=[1:1:11.5]) {
+                color("gold") translate ([i+1,2.75,2.5]) cube([.5,1,8.25]);
+                color("gold") translate ([i+1,4.75,2.5]) cube([.5,1,8.25]);
+            }
+            for (i=[17:1:36.5]) {
+                color("gold") translate ([i,2.75,2.5]) cube([.5,1,8.25]);
+                color("gold") translate ([i,4.75,2.5]) cube([.5,1,8.25]);
+            }
+        }
+    }
+}
+
+// JST-PH connector class
+module jst_ph(x,y,rotation,side,type,pcbsize_z) {
+    size_x = 2.4+(type*2);
+    size_y = 4.5;
+    place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+    union() {
+        difference() {
+            color("white") cube([size_x, size_y, 6]);
+            color("white") translate([.5, .5, .5]) cube([size_x-1, size_y-1, 6]);
+            color("white") translate([size_x/2-(0.5*type)/2, -.1,.5]) cube([0.5*type, size_y-2, 6]);
+        }
+        translate([1.95, 0, 0]) union() {
+            for(ind=[0:type-1]) {
+                color("silver") translate([ind*2, 1.4, .5]) cube([.5, .5, 4]);
+            }
+        }
+    }
+}
+
+
+// compute module holder class
+module cm_holder(x,y,rotation,side,type,pcbsize_z) {
+    // jetson nano
+    if(type == "jetsonnano") {        
+        size_x = 73;
+        size_y = 6.5;                
+        place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+        union() {  
+            difference () {
+                color("dimgray") translate([0,0,0]) cube([size_x,size_y,9.2]);
+                color("dimgray") translate([1.5,-1,5.7]) cube([70,3,5]);
+                color("dimgray") translate([3.5,-1,5.7]) cube([28.5,5.25,.92]);
+                color("dimgray") translate([34.5,-1,5.7]) cube([35,5.25,.92]);
+            }
+            for (i=[2:.5:31]) {
+                color("gold") translate ([i+.5,2,5.7]) cube([.25,2,.25]);
+            }
+            for (i=[34:.5:69]) {
+                color("gold") translate ([i+.5,2,5.7]) cube([.25,2,.25]);
+            }
+        }
+    }   
+}
+
+// compute module class
+module cm(x,y,rotation,side,type,pcbsize_z) {
+    $fn=90;
+    // jetson nano
+    if(type == "jetsonnano") {        
+        size_x = 70;
+        size_y = 45;                
+        place(x,y,size_x,size_y,rotation,side,type,pcbsize_z)
+        union() {  
+            difference () {
+                
+                color("tan") translate([0,0,7]) cube([size_x,size_y,1.4]);
+                color("tan") translate([37,-1,6]) cube([1,5,4]);
+                color("dimgray") translate([-1,18,6]) cube([3,4,4]);
+                color("dimgray") translate([size_x-2,18,6]) cube([3,4,4]);
+                translate([size_x-3,size_y-3,6]) cylinder(d=3,h=3);
+                translate([3,size_y-3,6]) cylinder(d=3,h=3);
+                
+            }
+            for (i=[2:.5:36]) {
+                color("gold") translate ([i+.5,0,6.8]) cube([.25,2,.25]);
+                color("gold") translate ([i+.5,0,8.4]) cube([.25,2,.25]);
+            }
+            for (i=[37.5:.5:67]) {
+                color("gold") translate ([i+.5,0,6.8]) cube([.25,2,.25]);
+                color("gold") translate ([i+.5,0,8.4]) cube([.25,2,.25]);
+            }
+            color("dimgrey") translate([20,13,8.3]) cube([14,14,1.2]);
+            difference() {
+                color("black") translate([6.5,4.5,9.5]) cube([58,40,16]);
+                color("dimgrey") translate([0,25.375,13.5]) rotate([90,2.5,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,13],[4,13],[3.5,0]]);}
+                color("dimgrey") translate([0,20.675,13.5]) rotate([90,-2.5,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,13],[4,13],[3.5,0]]);}
+                color("dimgrey") translate([0,30.5,13.5]) rotate([90,5,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,13],[4,13],[3.5,0]]);}
+                color("dimgrey") translate([0,15.25,13.5]) rotate([90,-5,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,13],[4,13],[3.5,0]]);}
+                color("dimgrey") translate([0,35,13.5]) rotate([90,10,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,10.5],[4,10.5],[3.5,0]]);}
+                color("dimgrey") translate([0,10.5,13]) rotate([90,-10,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[-.5,10.5],[4,10.5],[3.5,0]]);}
+                color("dimgrey") translate([0,36.5,20]) cube([70,10,4]);
+                color("dimgrey") translate([0,1.5,20]) cube([70,10,4]);
+                color("dimgrey") translate([0,39.5,13]) rotate([90,10,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[0,10.5],[3,10.5],[3,0]]);}
+                color("dimgrey") translate([0,6.5,12.5]) rotate([90,-10,90]) linear_extrude(70) {
+                    polygon(points = [[0,0],[0,10.5],[3,10.5],[3,0]]);}
+                color("dimgrey") translate([19,9,22]) cylinder(d=3, h=5);
+                color("dimgrey") translate([51,9,22]) cylinder(d=3, h=5);
+                color("dimgrey") translate([19,41,22]) cylinder(d=3, h=5);
+                color("dimgrey") translate([51,41,22]) cylinder(d=3, h=5);
+                    
+            }
+            difference() {
+                union() {
+                    color("silver") translate([size_x-3,size_y-3,0]) cylinder(d=5.2,h=7, $fn=6);
+                    color("silver") translate([3,size_y-3,0]) cylinder(d=5.2,h=7, $fn=6);
+                }
+                color("silver") translate([size_x-3,size_y-3,-.1]) cylinder(d=3,h=13);
+                color("silver") translate([3,size_y-3,-.1]) cylinder(d=3,h=13);
+            }
+        }
+    }   
 }

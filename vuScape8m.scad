@@ -15,9 +15,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Code released under GPLv3: http://www.gnu.org/licenses/gpl.html
 
-    20220505 Version 1.0.0    vuScape8m Vu8m and Odroid-M1 integrated Case initial release
+    20220505 Version 1.0.0    vuScape8m Vu8m and Odroid-M1 integrated Case initial release.
     20220509 Version 1.0.1    adjusted location of brackets and mounting holes,
                               odroid-m1 audio plug opening moved 1mm.
+    20220606 Version 1.1.0    added new stand for 180 rotated display, updated sbc_model.scad
+                              and sbc_case_builder_library.scad, added bottom vent.
 */
 
 use <./lib/fillets.scad>;
@@ -28,6 +30,7 @@ view = "model";                     // viewing mode "platter", "model", "debug"
 sbc_model = "m1";                   // sbc "m1"
 vent = true;                        // vent (true or false)
 bracket = true;                     // bracket (true or false)
+flip = false;                       // brackets that invert display
 sd_indent = true;                   // sdcard sphere indent
 
 sbc_off = false;                    // sbc off in model view (true or false)
@@ -122,11 +125,17 @@ if (view == "model") {
          translate([gap+wallthick+lcd_size[0],gap+wallthick+(case_offset_y/2),4+topthick]) 
              rotate([0,180,0]) hk_vu8m(false);
         }
-        if(bracket == true) {
+        if(bracket == true && flip == false) {
          color("grey",1) translate([gap+wallthick+8.5,(case_offset_y/2)-3.5,bottom_height-8]) 
              rotate([0,0,0]) bracket("left");
          color("grey",1) translate([gap+wallthick+9.5,(case_offset_y/2)-3.5,bottom_height-8]) 
              rotate([0,0,0]) bracket("right");
+        }
+        if(bracket == true && flip == true) {
+         color("grey",1) translate([gap+wallthick+8.5+181,(case_offset_y/2)-3.5+146,bottom_height-8]) 
+             rotate([0,0,180]) bracket("left");
+         color("grey",1) translate([gap+wallthick+9.5+179,(case_offset_y/2)-3.5+146,bottom_height-8]) 
+             rotate([0,0,180]) bracket("right");
         }
     }
 }
@@ -273,7 +282,7 @@ module case_cover() {
         translate([(width/2)-52,(depth/2)-wallthick-gap+45.5,bottom_height+c_height-floorthick-adjust]) 
                 cube([126,4,floorthick+3]);
         // hdmi opening
-        translate([(width/2)-wallthick-gap-48,
+        translate([(width/2)-wallthick-gap-49,
             (depth/2)-wallthick-gap+25,bottom_height+(top_height/2)+15.5]) rotate([0,180,90]) hdmi_open();
         // lan openings
         translate([(width/2)-wallthick-gap-46,
@@ -323,10 +332,12 @@ module case_cover() {
         translate([(width/2)-wallthick-gap+75,
             (depth/2)-wallthick-gap-42,bottom_height+(top_height/2)-3.5]) 
                 cube([12,31,4]);
+        // top vents
         if(vent == true) {
-            // top vents
             translate([(width/2)-wallthick-gap-25,
                 (depth/2)-wallthick-gap+75,bottom_height+(top_height/2)+4]) vent(2,12,8,2,1,12,"vertical");
+            translate([(width/2)-wallthick-gap-25,
+                (depth/2)-wallthick-gap-63,bottom_height+(top_height/2)+4]) vent(2,12,8,2,1,12,"vertical");
         }
         // sbc mount holes
         translate([gap+wallthick+56.25,39.25,bottom_height+c_height-floorthick])  
@@ -387,12 +398,19 @@ module bracket(side) {
                 }
             }
             // cover trim
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,13,top_height-adjust])
-                cube_fillet_inside([40,22,c_height], vertical=[0,0,c_fillet,c_fillet], 
-                    top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
-            translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,130,top_height-adjust])
-                cube_fillet_inside([40,28,c_height], vertical=[0,c_fillet,0,c_fillet], 
-                    top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
+            if(flip == false) {
+                translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,13,top_height-adjust])
+                    cube_fillet_inside([40,22,c_height], vertical=[0,0,c_fillet,c_fillet], 
+                        top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
+                translate([((width/2)-gap-wallthick-lcd_size[0]/2)+17,130,top_height-adjust])
+                    cube_fillet_inside([40,28,c_height], vertical=[0,c_fillet,0,c_fillet], 
+                        top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
+            }
+            if(flip == true) {
+            translate([7,102.5,bottom_height+floorthick+4.75]) 
+                cube_fillet_inside([20,38,7], vertical=[c_fillet,c_fillet,c_fillet,c_fillet], 
+                    top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
+            }
             // holes
             translate([((width/2)-gap-wallthick-lcd_size[0]/2)-5.5,.5,bottom_height+floorthick+adjust]) 
                 cylinder(d=3, h=15);
@@ -424,9 +442,19 @@ module bracket(side) {
                 }
             }
             // cover trim
-            translate([162.25,43.5,bottom_height+floorthick+4.75]) 
-                cube_fillet_inside([41,38,7], vertical=[c_fillet,0,c_fillet,c_fillet], 
-                    top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
+            if(flip == false) {
+                translate([162.25,43.5,bottom_height+floorthick+4.75]) 
+                    cube_fillet_inside([41,38,7], vertical=[c_fillet,0,c_fillet,c_fillet], 
+                        top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
+            }
+            if(flip == true) {
+                translate([((width/2)-gap-wallthick+lcd_size[0]/2)-35,lcd_size[1],top_height-adjust])
+                    cube_fillet_inside([40,22,c_height], vertical=[c_fillet,c_fillet,0,0], 
+                        top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);            
+                translate([((width/2)-gap-wallthick+lcd_size[0]/2)-35,16,c_height-top_height])
+                    cube_fillet_inside([40,28,c_height+16], vertical=[0,c_fillet,0,c_fillet], 
+                        top=[fillet,fillet,fillet,fillet,fillet], bottom=[0,0,0,0], $fn=90);
+            }            
             // holes
             translate([width-18.5,.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
             translate([width-18.5,depth-9.5,bottom_height+floorthick+adjust]) cylinder(d=3, h=15);
