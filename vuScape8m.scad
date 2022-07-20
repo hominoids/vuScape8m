@@ -20,6 +20,8 @@
                               odroid-m1 audio plug opening moved 1mm.
     20220606 Version 1.1.0    added new stand for 180 rotated display, updated sbc_model.scad
                               and sbc_case_builder_library.scad, added bottom vent.
+    20220720 Version 1.1.1    added openings for camera fpc
+
 */
 
 use <./lib/fillets.scad>;
@@ -32,6 +34,7 @@ vent = true;                        // vent (true or false)
 bracket = true;                     // bracket (true or false)
 flip = false;                       // brackets that invert display
 sd_indent = true;                   // sdcard sphere indent
+camera_cable = true;                // camera fpc openings (true or false)
 
 sbc_off = false;                    // sbc off in model view (true or false)
 vu8m_off = false;                   // vu8m off in model view (true or false)
@@ -54,7 +57,7 @@ h_depth = 123;                      // heatsink width
 
 c_width = 153+2*(wallthick+gap);    // cover width
 c_depth = 134+2*(wallthick+gap);    // cover depth
-c_height = 25+floorthick+gap;         // cover height 
+c_height = 25+floorthick+gap;       // cover height 
 
 c_fillet = 6;                       // corner fillets
 fillet = 0;                         // edge fillets
@@ -338,6 +341,16 @@ module case_cover() {
                 (depth/2)-wallthick-gap+75,bottom_height+(top_height/2)+4]) vent(2,12,8,2,1,12,"vertical");
             translate([(width/2)-wallthick-gap-25,
                 (depth/2)-wallthick-gap-63,bottom_height+(top_height/2)+4]) vent(2,12,8,2,1,12,"vertical");
+        }
+        if(camera_cable == true) {
+            translate([(width/2)-wallthick-gap,
+                (depth/2)-wallthick-gap+70,bottom_height+(top_height/2)-3]) cube([17,8,2]);
+            translate([(width/2)-wallthick-gap,
+                (depth/2)-wallthick-gap-68,bottom_height+(top_height/2)-3]) cube([17,8,2]);
+            translate([(width/2)-wallthick-gap+75,
+                (depth/2)-wallthick-gap+12,bottom_height+(top_height/2)-3]) cube([8,17,2]);
+            translate([(width/2)-wallthick-gap-55,
+                (depth/2)-wallthick-gap+8,bottom_height+(top_height/2)-3]) cube([8,17,2]);
         }
         // sbc mount holes
         translate([gap+wallthick+56.25,39.25,bottom_height+c_height-floorthick])  
